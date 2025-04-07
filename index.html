@@ -1,28 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Authentication complete</title>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    // Debug logging
+    console.log('Callback page loaded');
+    console.log('Current URL:', window.location.href);
+    
+    // Handle OAuth redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    console.log('OAuth parameters:', { code, state });
+    
+    if (code) {
+      // Send the code back to the main app
+      window.opener?.postMessage({ 
+        type: 'oauth_redirect', 
+        code: code,
+        state: state 
+      }, '*');
+      
+      console.log('Message sent to opener');
+      // Close the popup
+      window.close();
+    } else {
+      console.error('No code parameter found in URL');
+    }
+  </script>
 </head>
 <body>
-    <p>Authentication is complete. If this does not happen automatically, please close the window.</p>
-    <script>
-        window.addEventListener('load', function() {
-            // Get the authorization code from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const state = urlParams.get('state');
-            
-            // Store in localStorage with a unique key based on state
-            if (code && state) {
-                localStorage.setItem(`flutter-web-auth-2-${state}`, JSON.stringify({
-                    code: code,
-                    state: state
-                }));
-            }
-            
-            // Close the window
-            window.close();
-        });
-    </script>
+  <p>Redirecting back to the application...</p>
+  <script>
+    // Keep the window open for debugging
+    setTimeout(() => {
+      if (!window.closed) {
+        console.log('Window not closed automatically, closing manually');
+        window.close();
+      }
+    }, 5000);
+  </script>
 </body>
-</html>
+</html> 
